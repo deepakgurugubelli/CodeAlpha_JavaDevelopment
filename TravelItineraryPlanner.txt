@@ -1,137 +1,100 @@
-package deep;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class TravelItineraryPlanner {
-    static class Trip {
-        String destination;
-        String startDate;
-        String endDate;
-        String transportation;
-        String accommodation;
-        double estimatedBudget;
-        public Trip(String destination, String startDate, String endDate, String transportation, String accommodation, double estimatedBudget) {
-            this.destination = destination;
-            this.startDate = startDate;
-            this.endDate = endDate;
-            this.transportation = transportation;
-            this.accommodation = accommodation;
-            this.estimatedBudget = estimatedBudget;
-        }
 
-      
-        public void displayTripDetails() {
-            System.out.println("\n--- Trip Details ---");
-            System.out.println("Destination: " + destination);
-            System.out.println("Start Date: " + startDate);
-            System.out.println("End Date: " + endDate);
-            System.out.println("Transportation: " + transportation);
-            System.out.println("Accommodation: " + accommodation);
-            System.out.println("Estimated Budget: $" + estimatedBudget);
+    static class Destination {
+        String name;
+        String date;
+        String preference;
+        double budget;
+
+        Destination(String name, String date, String preference, double budget) {
+            this.name = name;
+            this.date = date;
+            this.preference = preference;
+            this.budget = budget;
         }
     }
 
-  
+    static class Itinerary {
+        List<Destination> destinations = new ArrayList<>();
+
+        void addDestination(Destination destination) {
+            destinations.add(destination);
+        }
+
+        void displayItinerary() {
+            for (Destination destination : destinations) {
+                System.out.println("Destination: " + destination.name);
+                System.out.println("Date: " + destination.date);
+                System.out.println("Preference: " + destination.preference);
+                System.out.println("Budget: ₹" + destination.budget);
+                System.out.println("Weather: " + getWeather(destination.name));
+                System.out.println("Map: " + getMapLink(destination.name));
+                System.out.println();
+            }
+        }
+
+        private String getWeather(String location) {
+            // Placeholder for actual weather API integration
+            return "Sunny, 25°C";
+        }
+
+        private String getMapLink(String location) {
+            // Placeholder for actual map API integration
+            return "http://maps.google.com/?q=" + location.replace(" ", "+");
+        }
+
+        double calculateTotalBudget() {
+            return destinations.stream().mapToDouble(destination -> destination.budget).sum();
+        }
+    }
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        ArrayList<Trip> itinerary = new ArrayList<>();
-        int choice;
+        Itinerary itinerary = new Itinerary();
+        boolean running = true;
 
-      
-        do {
-            System.out.println("\n--- Travel Itinerary Planner ---");
-            System.out.println("1. Add a Trip");
-            System.out.println("2. View Itinerary");
-            System.out.println("3. Calculate Total Budget");
-            System.out.println("4. Get Weather and Map Info (Simulated)");
-            System.out.println("5. Exit");
-            System.out.print("Enter your choice: ");
-            choice = scanner.nextInt();
-            scanner.nextLine(); 
+        while (running) {
+            System.out.println("Travel Itinerary Planner");
+            System.out.println("1. Add Destination");
+            System.out.println("2. Display Itinerary");
+            System.out.println("3. Total Budget");
+            System.out.println("4. Exit");
+            System.out.print("Choose an option: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine();  // Consume newline
 
             switch (choice) {
                 case 1:
-                    
-                    addTrip(scanner, itinerary);
+                    System.out.print("Enter destination: ");
+                    String name = scanner.nextLine();
+                    System.out.print("Enter date (YYYY-MM-DD): ");
+                    String date = scanner.nextLine();
+                    System.out.print("Enter preference: ");
+                    String preference = scanner.nextLine();
+                    System.out.print("Enter budget: ₹");
+                    double budget = scanner.nextDouble();
+                    scanner.nextLine();  // Consume newline
+                    itinerary.addDestination(new Destination(name, date, preference, budget));
+                    System.out.println("Destination added!");
                     break;
                 case 2:
-                 
-                    viewItinerary(itinerary);
+                    itinerary.displayItinerary();
                     break;
                 case 3:
-                   
-                    calculateTotalBudget(itinerary);
+                    System.out.println("Total Budget: ₹" + itinerary.calculateTotalBudget());
                     break;
                 case 4:
-                  
-                    getWeatherAndMapInfo(scanner);
-                    break;
-                case 5:
-                    
-                    System.out.println("Thank you for using the Travel Itinerary Planner. Safe travels!");
+                    running = false;
                     break;
                 default:
-                    System.out.println("Invalid choice, please try again.");
-                    break;
+                    System.out.println("Invalid option. Please try again.");
             }
-        } while (choice != 5);
+        }
 
         scanner.close();
-    }
-
-    
-    private static void addTrip(Scanner scanner, ArrayList<Trip> itinerary) {
-        System.out.print("Enter destination: ");
-        String destination = scanner.nextLine();
-        System.out.print("Enter start date (YYYY-MM-DD): ");
-        String startDate = scanner.nextLine();
-        System.out.print("Enter end date (YYYY-MM-DD): ");
-        String endDate = scanner.nextLine();
-        System.out.print("Enter transportation method: ");
-        String transportation = scanner.nextLine();
-        System.out.print("Enter accommodation: ");
-        String accommodation = scanner.nextLine();
-        System.out.print("Enter estimated budget: $");
-        double estimatedBudget = scanner.nextDouble();
-        scanner.nextLine();
-
-       
-        Trip newTrip = new Trip(destination, startDate, endDate, transportation, accommodation, estimatedBudget);
-        itinerary.add(newTrip);
-        System.out.println("Your trip has been added to the itinerary!");
-    }
-
-    
-    private static void viewItinerary(ArrayList<Trip> itinerary) {
-        if (itinerary.isEmpty()) {
-            System.out.println("Your itinerary is currently empty.");
-        } else {
-            for (Trip trip : itinerary) {
-                trip.displayTripDetails();
-            }
-        }
-    }
-
-   
-    private static void calculateTotalBudget(ArrayList<Trip> itinerary) {
-        double totalBudget = 0;
-        for (Trip trip : itinerary) {
-            totalBudget += trip.estimatedBudget;
-        }
-        System.out.println("Total estimated budget for your trips: $" + totalBudget);
-    }
-
-    
-    private static void getWeatherAndMapInfo(Scanner scanner) {
-        System.out.print("Enter a destination to get weather and map info: ");
-        String destination = scanner.nextLine();
-
-      
-        System.out.println("\nWeather Information for " + destination + ":");
-        System.out.println("Temperature: 25°C, Sunny");
-        System.out.println("Weather Forecast: Clear skies with no expected rain.");
-
-        System.out.println("\nMap for " + destination + ":");
-        System.out.println("View map: https://maps.google.com/?q=" + destination.replace(" ", "+"));
     }
 }
